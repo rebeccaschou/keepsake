@@ -18,6 +18,7 @@ enum AppScreen {
 struct Keepsake: Identifiable {
     let id = UUID()
     let sender: String
+    let recipient: String
     let caption: String
     let image: UIImage?
     let deliveryDate: Date
@@ -44,6 +45,7 @@ class KeepsakeStore: ObservableObject {
             // 1. Fully populated - Opened
             Keepsake(
                 sender: "Alice",
+                recipient: "Rebecca",
                 caption: "Testing the flow.",
                 image: seedImage,
                 deliveryDate: now,
@@ -55,6 +57,7 @@ class KeepsakeStore: ObservableObject {
             // 2. Minimal metadata - Locked (Arriving in 3 days)
             Keepsake(
                 sender: "Jordan",
+                recipient: "Rebecca",
                 caption: "A secret for later.",
                 image: seedImage,
                 deliveryDate: cal.date(byAdding: .day, value: 3, to: now)!,
@@ -66,6 +69,7 @@ class KeepsakeStore: ObservableObject {
             // 3. No location - Opened (Arrived yesterday)
             Keepsake(
                 sender: "Mom",
+                recipient: "Rebecca",
                 caption: "The flowers look great today.",
                 image: seedImage,
                 deliveryDate: cal.date(byAdding: .day, value: -1, to: now)!,
@@ -75,7 +79,8 @@ class KeepsakeStore: ObservableObject {
             
             // 4. Long-term vault - Locked (Arriving in 1 year)
             Keepsake(
-                sender: "Self",
+                sender: "Avery",
+                recipient: "Rebecca",
                 caption: "Note to self: You did it.",
                 image: seedImage,
                 deliveryDate: cal.date(byAdding: .year, value: 1, to: now)!,
@@ -87,6 +92,7 @@ class KeepsakeStore: ObservableObject {
             // 5. Short-term - Opened (Arrived 2 hours ago)
             Keepsake(
                 sender: "Maya",
+                recipient: "Rebecca",
                 caption: "Coffee's on me next time.",
                 image: seedImage,
                 deliveryDate: cal.date(byAdding: .hour, value: -2, to: now)!,

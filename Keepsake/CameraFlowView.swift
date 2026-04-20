@@ -380,7 +380,8 @@ struct CameraFlowView: View {
         
         // 3. Create the Keepsake Object
         let newKeepsake = Keepsake(
-            sender: selectedRecipient, // Assumes 'recipient' is a @State variable in your view
+            sender: "Rebecca",
+            recipient: selectedRecipient, // Assumes 'recipient' is a @State variable in your view
             caption: caption,
             image: capturedImage, // Assumes 'capturedImage' is the UIImage from the camera
             deliveryDate: arrivalDate,
@@ -388,6 +389,9 @@ struct CameraFlowView: View {
             captureDate: dateValue,
             captureTime: timeValue
         )
+        
+        // 4. Archive the new Keepsake in long-term storage
+        StorageService.shared.saveKeepsakeToArchive(newKeepsake)
         
         // 5. Success Haptics & Transition
         let successImpact = UINotificationFeedbackGenerator()
