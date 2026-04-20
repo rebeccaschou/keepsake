@@ -11,6 +11,9 @@ struct ContentView: View {
     @StateObject var store = KeepsakeStore()
     @State private var activeScreen: AppScreen = .camera
     
+    // THE SHARED BUCKET
+    @State private var capturedImage: UIImage? = nil
+    
     let figDarkBg = Color(red: 28/255, green: 28/255, blue: 28/255)
 
     var body: some View {
@@ -20,13 +23,15 @@ struct ContentView: View {
             Group {
                 switch activeScreen {
                 case .camera:
-                    MainCameraView(activeScreen: $activeScreen)
+                    // Pass as a Binding so the camera can SET it
+                    MainCameraView(activeScreen: $activeScreen, capturedImage: $capturedImage)
                         .transition(.asymmetric(insertion: .opacity, removal: .move(edge: .leading)))
                 case .home:
                     HomeView(activeScreen: $activeScreen)
                         .transition(.opacity)
                 case .compose:
-                    CameraFlowView(activeScreen: $activeScreen)
+                    // Pass as a simple value so the flow can READ it
+                    CameraFlowView(activeScreen: $activeScreen, capturedImage: capturedImage)
                         .transition(.move(edge: .trailing))
                 }
             }

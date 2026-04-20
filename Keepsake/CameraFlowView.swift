@@ -22,6 +22,8 @@ struct CameraFlowView: View {
     @State private var includeDate = false
     @State private var includeTime = false
     
+    let capturedImage: UIImage?
+    
     let figDarkBg = Color(red: 28/255, green: 28/255, blue: 28/255)
     let figLightText = Color(red: 211/255, green: 211/255, blue: 211/255)
     
@@ -219,14 +221,20 @@ struct CameraFlowView: View {
                         Spacer()
 
                         // 1. HERO PHOTO PREVIEW
-                        // Bumping the size up for a more "gallery" feel
-                        Image("CameraPlaceholder")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 280, height: 400) // Larger, more immersive frame
-                            .clipShape(RoundedRectangle(cornerRadius: 2)) // Sharper corners to match theme
-                            .shadow(color: .black.opacity(0.5), radius: 30, y: 15)
-                            .transition(.scale(scale: 0.95).combined(with: .opacity))
+                        if let uiImage = capturedImage {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 280, height: 400)
+                                .clipShape(RoundedRectangle(cornerRadius: 2))
+                                .shadow(color: .black.opacity(0.5), radius: 30, y: 15)
+                                .transition(.scale(scale: 0.95).combined(with: .opacity))
+                        } else {
+                            // Fallback if no image was captured
+                            Rectangle()
+                                .fill(Color(white: 0.82))
+                                .frame(width: 280, height: 400)
+                        }
 
                         // 2. THE CAPTION (Refined)
                         if !caption.isEmpty {
@@ -339,7 +347,6 @@ struct CameraFlowView: View {
         let now = Date()
         var arrivalDate = now
         
-        // Snapping the slider index to our calendar math
         switch Int(stepIndex) {
         case 0: arrivalDate = calendar.date(byAdding: .day, value: 1, to: now)!
         case 1: arrivalDate = calendar.date(byAdding: .day, value: 3, to: now)!
@@ -354,34 +361,33 @@ struct CameraFlowView: View {
         default: arrivalDate = calendar.date(byAdding: .day, value: 1, to: now)!
         }
         
-        // 2. Format Metadata strings based on toggles
-        var activeMetadata: [String] = []
+        // 2. Prepare Formatted Metadata (matching your Model fields)
+        let locValue = includeLocation ? "PROVIDENCE, RI" : nil
         
-        if includeLocation {
-            activeMetadata.append("📍 Providence, RI") // Or use a location manager later
-        }
+        var dateValue: String? = nil
         if includeDate {
             let df = DateFormatter()
-            df.dateStyle = .medium
-            activeMetadata.append("📅 \(df.string(from: now))")
+            df.dateFormat = "MMM dd, yyyy" // e.g., APR 20, 2026
+            dateValue = df.string(from: now).uppercased()
         }
+        
+        var timeValue: String? = nil
         if includeTime {
             let tf = DateFormatter()
-            tf.timeStyle = .short
-            activeMetadata.append("⌚️ \(tf.string(from: now))")
+            tf.dateFormat = "HH:mm" // e.g., 14:30
+            timeValue = tf.string(from: now)
         }
         
-        // 3. Create the Keepsake
+        // 3. Create the Keepsake Object
         let newKeepsake = Keepsake(
-            recipient: selectedRecipient,
+            sender: selectedRecipient, // Assumes 'recipient' is a @State variable in your view
             caption: caption,
-            imageName: "CameraPlaceholder", // This will eventually be the actual captured image
+            image: capturedImage, // Assumes 'capturedImage' is the UIImage from the camera
             deliveryDate: arrivalDate,
-            metadata: activeMetadata
+            location: locValue,
+            captureDate: dateValue,
+            captureTime: timeValue
         )
-        
-        // 4. Save to Store
-        store.messages.append(newKeepsake)
         
         // 5. Success Haptics & Transition
         let successImpact = UINotificationFeedbackGenerator()
@@ -391,13 +397,15 @@ struct CameraFlowView: View {
             isSent = true
         }
         
-        // Automatically return to camera after 3 seconds
+        // 6. Reset & Return
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
             withAnimation(.easeInOut(duration: 0.8)) {
                 activeScreen = .camera
-                isSent = false // Reset for next time
+                isSent = false
                 currentStep = 0
                 caption = ""
+                selectedRecipient = "" // Clear for next use
+                // capturedImage = nil // Optional: clear the image buffer
             }
         }
     }

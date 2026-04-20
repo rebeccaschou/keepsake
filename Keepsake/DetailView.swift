@@ -15,46 +15,82 @@ struct DetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 30) {
-                // The Photo - Adjusted to be even more prominent
-                Rectangle()
-                    .fill(Color(white: 0.82))
-                    .aspectRatio(contentMode: .fit) // Keeps original photo proportions
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 20) // Breathing room from the top bar
-
-                VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 0) {
+                // Photo Area
+                if let uiImage = message.image {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(0.7, contentMode: .fill)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
+                        .padding(.top, 50)
+                }
+                
+                VStack(alignment: .leading, spacing: 30) {
+                    // Caption
                     Text(message.caption)
                         .font(.custom("Palatino", size: 22))
                         .italic()
-                        .lineSpacing(6)
                         .foregroundStyle(figLightText)
                     
                     Divider().background(figLightText.opacity(0.2))
                     
-                    HStack {
-                        Text("FROM \(message.recipient.uppercased())")
-                        Spacer()
-                        Text(message.deliveryDate.formatted(date: .abbreviated, time: .omitted))
+                    // Metadata Grid
+                    VStack(alignment: .leading, spacing: 15) {
+                        // Row 1: Sent To (Left) & Location (Right)
+                        HStack(alignment: .top) {
+                            metadataBlock(label: "SENT FROM", value: message.sender, alignment: .leading)
+                            
+                            Spacer()
+                            
+                            if let loc = message.location {
+                                metadataBlock(label: "LOCATION", value: loc, alignment: .trailing)
+                            }
+                        }
+                        
+                        // Row 2: Captured (Left) & Time (Right)
+                        HStack(alignment: .top) {
+                            if let date = message.captureDate {
+                                metadataBlock(label: "CAPTURED", value: date, alignment: .leading)
+                            }
+                            
+                            Spacer()
+                            
+                            if let time = message.captureTime {
+                                metadataBlock(label: "TIME", value: time, alignment: .trailing)
+                            }
+                        }
                     }
-                    .font(.system(size: 11, weight: .bold, design: .monospaced))
-                    .foregroundStyle(figLightText.opacity(0.5))
                 }
-                .padding(.horizontal, 25)
+                .padding(30)
             }
         }
         .background(figDarkBg)
-        .navigationBarBackButtonHidden(true) // Remove "Back" text
+        .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: { dismiss() }) {
-                    // Replicating your creation flow arrow icon
                     Image(systemName: "arrow.left")
                         .font(.system(size: 18, weight: .medium))
                         .foregroundStyle(figLightText)
-                        .padding(.vertical, 10)
                 }
             }
+        }
+    }
+
+    // Helper for consistent metadata styling
+    @ViewBuilder
+    func metadataBlock(label: String, value: String, alignment: HorizontalAlignment) -> some View {
+        VStack(alignment: alignment, spacing: 4) {
+            Text(label)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(figLightText.opacity(0.4))
+            
+            Text(value.uppercased())
+                .font(.system(size: 12, weight: .bold, design: .monospaced))
+                .foregroundStyle(figLightText)
+                // Fix: Use .leading and .trailing here
+                .multilineTextAlignment(alignment == .leading ? .leading : .trailing)
         }
     }
 }

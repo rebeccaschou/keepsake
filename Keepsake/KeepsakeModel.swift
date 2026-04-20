@@ -17,14 +17,16 @@ enum AppScreen {
 // The Data Model
 struct Keepsake: Identifiable {
     let id = UUID()
-    let recipient: String
+    let sender: String
     let caption: String
-    let imageName: String
+    let image: UIImage?
     let deliveryDate: Date
-    let metadata: [String]
     
-    // ADD THIS PART:
-    // This returns true if the current time is past the delivery date
+    // Explicit Metadata fields
+    var location: String?
+    var captureDate: String? // e.g., "APR 08, 2026"
+    var captureTime: String? // e.g., "14:22"
+    
     var isReady: Bool {
         Date() >= deliveryDate
     }
@@ -33,30 +35,76 @@ struct Keepsake: Identifiable {
 class KeepsakeStore: ObservableObject {
     @Published var messages: [Keepsake] = []
     
-    // In KeepsakeStore.swift
     init() {
+        let seedImage = UIImage.placeholder()
         let now = Date()
         let cal = Calendar.current
         
         self.messages = [
-            Keepsake(recipient: "Alice", caption: "Sunrise.", imageName: "p1",
-                     deliveryDate: cal.date(byAdding: .day, value: -2, to: now)!, metadata: []), // OPEN
-            Keepsake(recipient: "Maya", caption: "Paris 2024.", imageName: "p3",
-                     deliveryDate: cal.date(byAdding: .hour, value: -5, to: now)!, metadata: []), // OPEN
-            Keepsake(recipient: "Luca", caption: "See you in a year.", imageName: "p4",
-                     deliveryDate: cal.date(byAdding: .year, value: 1, to: now)!, metadata: []), // LOCKED
-            Keepsake(recipient: "Mom", caption: "Garden update.", imageName: "p5",
-                     deliveryDate: cal.date(byAdding: .day, value: -10, to: now)!, metadata: []), // OPEN
-            Keepsake(recipient: "Self", caption: "Future thoughts.", imageName: "p2",
-                     deliveryDate: cal.date(byAdding: .month, value: 3, to: now)!, metadata: []), // LOCKED
-            Keepsake(recipient: "Self", caption: "Locked Archive.", imageName: "p6",
-                     deliveryDate: cal.date(byAdding: .day, value: 5, to: now)!, metadata: [])   // LOCKED
+            // 1. Fully populated - Opened
+            Keepsake(
+                sender: "Alice",
+                caption: "Testing the flow.",
+                image: seedImage,
+                deliveryDate: now,
+                location: "PROVIDENCE, RI",
+                captureDate: "APR 08, 2026",
+                captureTime: "14:22"
+            ),
+            
+            // 2. Minimal metadata - Locked (Arriving in 3 days)
+            Keepsake(
+                sender: "Jordan",
+                caption: "A secret for later.",
+                image: seedImage,
+                deliveryDate: cal.date(byAdding: .day, value: 3, to: now)!,
+                location: "THE STUDIO",
+                captureDate: "APR 15, 2026",
+                captureTime: "09:00"
+            ),
+            
+            // 3. No location - Opened (Arrived yesterday)
+            Keepsake(
+                sender: "Mom",
+                caption: "The flowers look great today.",
+                image: seedImage,
+                deliveryDate: cal.date(byAdding: .day, value: -1, to: now)!,
+                captureDate: "APR 19, 2026",
+                captureTime: "11:30"
+            ),
+            
+            // 4. Long-term vault - Locked (Arriving in 1 year)
+            Keepsake(
+                sender: "Self",
+                caption: "Note to self: You did it.",
+                image: seedImage,
+                deliveryDate: cal.date(byAdding: .year, value: 1, to: now)!,
+                location: "NYC",
+                captureDate: "JAN 01, 2026",
+                captureTime: "00:01"
+            ),
+            
+            // 5. Short-term - Opened (Arrived 2 hours ago)
+            Keepsake(
+                sender: "Maya",
+                caption: "Coffee's on me next time.",
+                image: seedImage,
+                deliveryDate: cal.date(byAdding: .hour, value: -2, to: now)!,
+                location: "BOLT COFFEE",
+                captureDate: "APR 20, 2026",
+                captureTime: "08:15"
+            )
         ]
     }
-    
-    // Computed property for the "Inbox" list if you still use it elsewhere
-    var deliveredMessages: [Keepsake] {
-        messages.filter { $0.isReady }
-               .sorted(by: { $0.deliveryDate > $1.deliveryDate })
+}
+
+extension UIImage {
+    static func placeholder(size: CGSize = CGSize(width: 300, height: 400)) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { context in
+            // Fill with your viewfinder gray
+            UIColor(white: 0.82, alpha: 1.0).setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+        }
     }
 }

@@ -13,7 +13,7 @@ struct HomeView: View {
     
     let figDarkBg = Color(red: 28/255, green: 28/255, blue: 28/255)
     let figLightText = Color(red: 211/255, green: 211/255, blue: 211/255)
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -40,27 +40,25 @@ struct HomeView: View {
                     .padding(.top, 60)   // Matches Camera
                     .padding(.bottom, 15) // Matches Camera
                     .background(figDarkBg)
-
+                    
                     // --- THE GRID ---
                     ScrollView(showsIndicators: false) {
+                        // Inside HomeView ScrollView
                         HStack(alignment: .top, spacing: 18) {
-                            // Left Column: Even Indices (0, 2, 4...)
+                            // Left Column
                             LazyVStack(spacing: 18) {
                                 ForEach(Array(store.messages.enumerated()), id: \.offset) { index, msg in
-                                    if index % 2 == 0 {
-                                        archiveTile(message: msg, index: index)
-                                    }
+                                    if index % 2 == 0 { archiveTile(message: msg, index: index) }
                                 }
                             }
                             
-                            // Right Column: Odd Indices (1, 3, 5...)
+                            // Right Column (Staggered down)
                             LazyVStack(spacing: 18) {
                                 ForEach(Array(store.messages.enumerated()), id: \.offset) { index, msg in
-                                    if index % 2 != 0 {
-                                        archiveTile(message: msg, index: index)
-                                    }
+                                    if index % 2 != 0 { archiveTile(message: msg, index: index) }
                                 }
                             }
+                            .padding(.top, 40) // This creates the "Keepsake" offset look
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 10)
@@ -69,45 +67,51 @@ struct HomeView: View {
             }
         }
     }
-
+    
     @ViewBuilder
     func archiveTile(message: Keepsake, index: Int) -> some View {
-        let heights: [CGFloat] = [320, 220, 280, 180]
-        let tileHeight = heights[index % heights.count]
-        
-        // Using the real DetailView now
-        NavigationLink(destination: DetailView(message: message)) {
-            ZStack(alignment: .bottomLeading) {
-                Rectangle() // Sharp edges to match the grid
-                    .fill(Color(white: 0.82))
-                    .frame(height: tileHeight)
-                    .overlay(
-                        // Show a lock if it's not ready to open yet
-                        Group {
-                            if !message.isReady {
-                                Color.black.opacity(0.3)
-                                VStack(spacing: 8) {
-                                    Image(systemName: "lock.fill")
-                                        .font(.system(size: 16))
-                                    Text(message.deliveryDate, style: .date)
-                                        .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                }
-                                .foregroundStyle(figLightText.opacity(0.6))
-                            }
-                        }
-                    )
-                
-                // Minimalist Label for ready messages
-                if message.isReady {
-                    Text(message.recipient.uppercased())
-                        .font(.system(size: 10, weight: .bold, design: .monospaced))
-                        .foregroundStyle(.black.opacity(0.6))
-                        .padding(12)
+        if message.isReady {
+            // 1. CLICKABLE: Wrapped in NavigationLink
+            NavigationLink(destination: DetailView(message: message)) {
+                tileContent(message: message)
+            }
+            .buttonStyle(PlainButtonStyle())
+        } else {
+            // 2. NOT CLICKABLE: Just the view, no link
+            tileContent(message: message)
+        }
+    }
+    
+    @ViewBuilder
+    func tileContent(message: Keepsake) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            if let uiImage = message.image {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(0.7, contentMode: .fill)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+            }
+            
+            if !message.isReady {
+                Color.black.opacity(0.4)
+                VStack(spacing: 6) {
+                    Image(systemName: "lock.fill").font(.system(size: 14))
+                    Text(message.deliveryDate, style: .date)
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
                 }
+                .foregroundStyle(figLightText)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                Text(message.sender.uppercased())
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    .foregroundStyle(.white)
+                    .padding(12)
+                    .shadow(radius: 2)
             }
         }
-        .buttonStyle(PlainButtonStyle())
-        // Disable interaction if the message isn't ready yet
-        .disabled(!message.isReady)
+        .aspectRatio(0.7, contentMode: .fit)
+        .frame(maxWidth: .infinity)
+        .clipped()
     }
 }

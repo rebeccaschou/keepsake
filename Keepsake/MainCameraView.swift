@@ -14,6 +14,8 @@ struct MainCameraView: View {
     
     let figDarkBg = Color(red: 28/255, green: 28/255, blue: 28/255)
     let figLightText = Color(red: 211/255, green: 211/255, blue: 211/255)
+    
+    @Binding var capturedImage: UIImage?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -72,6 +74,8 @@ struct MainCameraView: View {
     }
 
     func triggerCapture() {
+        self.capturedImage = UIImage.placeholder()
+        
         let impact = UIImpactFeedbackGenerator(style: .medium)
         impact.impactOccurred()
         
