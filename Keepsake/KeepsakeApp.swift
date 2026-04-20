@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct KeepsakeApp: App {
+    @StateObject private var store = KeepsakeStore()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(store)
         }
     }
 }
