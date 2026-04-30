@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CameraFlowView: View {
+struct CreationView: View {
     @Binding var activeScreen: AppScreen
     @EnvironmentObject var store: KeepsakeStore
     @State private var currentStep = 0

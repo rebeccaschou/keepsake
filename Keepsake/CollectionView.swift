@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HomeView: View {
+struct CollectionView: View {
     @Binding var activeScreen: AppScreen
     @EnvironmentObject var store: KeepsakeStore
     

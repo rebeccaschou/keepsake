@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MainCameraView: View {
+struct CameraView: View {
     @Binding var activeScreen: AppScreen
     @EnvironmentObject var store: KeepsakeStore
     @State private var flashOpacity: Double = 0.0

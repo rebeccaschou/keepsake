@@ -24,14 +24,14 @@ struct ContentView: View {
                 switch activeScreen {
                 case .camera:
                     // Pass as a Binding so the camera can SET it
-                    MainCameraView(activeScreen: $activeScreen, capturedImage: $capturedImage)
+                    CameraView(activeScreen: $activeScreen, capturedImage: $capturedImage)
                         .transition(.asymmetric(insertion: .opacity, removal: .move(edge: .leading)))
                 case .home:
-                    HomeView(activeScreen: $activeScreen)
+                    CollectionView(activeScreen: $activeScreen)
                         .transition(.opacity)
                 case .compose:
                     // Pass as a simple value so the flow can READ it
-                    CameraFlowView(activeScreen: $activeScreen, capturedImage: capturedImage)
+                    CreationView(activeScreen: $activeScreen, capturedImage: capturedImage)
                         .transition(.move(edge: .trailing))
                 }
             }
