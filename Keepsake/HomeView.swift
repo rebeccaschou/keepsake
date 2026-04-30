@@ -63,6 +63,29 @@ struct HomeView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 10)
                     }
+                    
+                    // --- EXPORT BUTTON ROW ---
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            // This is where the export functionality would be implemented
+                            // This would retrieve the universal format stored keepsakes and download to the user's device
+                        }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "square.and.arrow.up")
+                                Text("Export All Keepsakes")
+                                    .font(.system(size: 12, weight: .bold, design: .monospaced))
+                            }
+                            .foregroundStyle(figLightText)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.white.opacity(0.08))
+                            .clipShape(Capsule())
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
                 }
             }
         }
