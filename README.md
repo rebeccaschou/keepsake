@@ -28,7 +28,7 @@ Keepsake/
 ├── App/
 │   └── KeepsakeApp.swift        # Entry point and EnvironmentObject injection
 ├── Models/
-│   ├── KeepsakeModel.swift           # The core keepsake data model 
+│   ├── KeepsakeModel.swift      # The core keepsake data model 
 │   └── AppModel.swift           # Enum for state-driven navigation 
 ├── Views/
 │   ├── ContentView.swift        # Root router (switches between camera, creation, and collection)
