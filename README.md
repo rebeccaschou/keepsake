@@ -28,7 +28,7 @@ Keepsake/
 ├── App/
 │   └── KeepsakeApp.swift        # Entry point and EnvironmentObject injection
 ├── Models/
-│   ├── Keepsake.swift           # The core keepsake data model 
+│   ├── KeepsakeModel.swift           # The core keepsake data model 
 │   └── AppModel.swift           # Enum for state-driven navigation 
 ├── Views/
 │   ├── ContentView.swift        # Root router (switches between camera, creation, and collection)
@@ -37,6 +37,6 @@ Keepsake/
 │   ├── CollectionView.swift     # Collection view of all received keepsakes 
 │   └── DetailView.swift         # Full-screen keepsake viewer with image, caption, and metadata
 ├── Services/
-│   ├── StorageManager.swift     # Archival logic: PDF conversion and text parsing
+│   ├── StorageService.swift     # Archival logic: PDF conversion and text parsing
 │   └── KeepsakeStore.swift      # The runtime \"Source of Truth\" (ObservableObject)
 └── Assets/
