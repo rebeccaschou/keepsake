@@ -40,3 +40,7 @@ Keepsake/
 │   ├── StorageService.swift     # Archival logic: PDF conversion and text parsing
 │   └── KeepsakeStore.swift      # The runtime \"Source of Truth\" (ObservableObject)
 └── Assets/
+```
+
+## Demo Video
+https://github.com/user-attachments/assets/3cf2aa8d-9b5f-4575-8509-5bdbc509933b
